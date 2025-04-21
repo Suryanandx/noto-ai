@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   PanelLeft,
+  Sparkles,
 } from "lucide-react"
 import { getBrowserClient } from "@/lib/supabase"
 import { useAuth } from "@/context/auth-context"
@@ -252,7 +253,13 @@ export function Sidebar() {
     <>
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center">
-          <NotoLogo />
+          {collapsed && !isMobileView ? (
+            <div className="flex justify-center items-center w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+          ) : (
+            <NotoLogo />
+          )}
         </div>
         <div className="flex items-center">
           {isMobileView ? (
@@ -273,16 +280,29 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="p-2">
+      <div className={cn("p-2", collapsed && !isMobileView && "px-1")}>
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 bg-gray-100 border-0 focus-visible:ring-1"
-          />
+          {collapsed && !isMobileView ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-full h-9 flex justify-center"
+              onClick={() => handleNavigation("/dashboard/search")}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          ) : (
+            <>
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-9 bg-gray-100 border-0 focus-visible:ring-1"
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -294,12 +314,19 @@ export function Sidebar() {
           className="w-full"
         >
           <CollapsibleTrigger asChild>
-            <button className="flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100">
-              {expandedSections.quickLinks ? (
-                <ChevronDown className="h-4 w-4 mr-1" />
-              ) : (
-                <ChevronRight className="h-4 w-4 mr-1" />
+            <button
+              className={cn(
+                "flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100",
+                collapsed && !isMobileView && "justify-center",
               )}
+            >
+              {!collapsed || isMobileView ? (
+                expandedSections.quickLinks ? (
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-1" />
+                )
+              ) : null}
               <span className={cn("font-medium", collapsed && !isMobileView && "sr-only")}>Quick Links</span>
             </button>
           </CollapsibleTrigger>
@@ -307,31 +334,34 @@ export function Sidebar() {
             <div
               className={cn(
                 "flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer",
+                collapsed && !isMobileView && "justify-center",
                 pathname === "/dashboard" && "bg-gray-100 font-medium",
               )}
               onClick={() => handleNavigation("/dashboard")}
             >
-              <Home className="h-4 w-4 mr-2" />
+              <Home className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className={cn(collapsed && !isMobileView && "sr-only")}>Home</span>
             </div>
             <div
               className={cn(
                 "flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer",
+                collapsed && !isMobileView && "justify-center",
                 pathname === "/dashboard/search" && "bg-gray-100 font-medium",
               )}
               onClick={() => handleNavigation("/dashboard/search")}
             >
-              <Search className="h-4 w-4 mr-2" />
+              <Search className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className={cn(collapsed && !isMobileView && "sr-only")}>Search</span>
             </div>
             <div
               className={cn(
                 "flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer",
+                collapsed && !isMobileView && "justify-center",
                 pathname === "/dashboard/settings" && "bg-gray-100 font-medium",
               )}
               onClick={() => handleNavigation("/dashboard/settings")}
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className={cn(collapsed && !isMobileView && "sr-only")}>Settings</span>
             </div>
           </CollapsibleContent>
@@ -344,12 +374,19 @@ export function Sidebar() {
           className="w-full"
         >
           <CollapsibleTrigger asChild>
-            <button className="flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100">
-              {expandedSections.recentNotes ? (
-                <ChevronDown className="h-4 w-4 mr-1" />
-              ) : (
-                <ChevronRight className="h-4 w-4 mr-1" />
+            <button
+              className={cn(
+                "flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100",
+                collapsed && !isMobileView && "justify-center",
               )}
+            >
+              {!collapsed || isMobileView ? (
+                expandedSections.recentNotes ? (
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-1" />
+                )
+              ) : null}
               <span className={cn("font-medium", collapsed && !isMobileView && "sr-only")}>Recent Notes</span>
             </button>
           </CollapsibleTrigger>
@@ -362,6 +399,7 @@ export function Sidebar() {
                   key={note.id}
                   className={cn(
                     "flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer",
+                    collapsed && !isMobileView && "justify-center",
                     pathname === `/dashboard/edit/${note.id}` && "bg-gray-100 font-medium",
                   )}
                   onClick={() => handleNavigation(`/dashboard/edit/${note.id}`)}
@@ -383,12 +421,19 @@ export function Sidebar() {
         {/* Tags */}
         <Collapsible open={expandedSections.tags} onOpenChange={() => toggleSection("tags")} className="w-full">
           <CollapsibleTrigger asChild>
-            <button className="flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100">
-              {expandedSections.tags ? (
-                <ChevronDown className="h-4 w-4 mr-1" />
-              ) : (
-                <ChevronRight className="h-4 w-4 mr-1" />
+            <button
+              className={cn(
+                "flex items-center w-full text-sm p-2 rounded-md hover:bg-gray-100",
+                collapsed && !isMobileView && "justify-center",
               )}
+            >
+              {!collapsed || isMobileView ? (
+                expandedSections.tags ? (
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-1" />
+                )
+              ) : null}
               <span className={cn("font-medium", collapsed && !isMobileView && "sr-only")}>Tags</span>
             </button>
           </CollapsibleTrigger>
@@ -397,10 +442,13 @@ export function Sidebar() {
               tags.map((tag) => (
                 <div
                   key={tag.id}
-                  className="flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+                  className={cn(
+                    "flex items-center text-sm p-2 rounded-md hover:bg-gray-100 cursor-pointer",
+                    collapsed && !isMobileView && "justify-center",
+                  )}
                   onClick={() => handleNavigation(`/dashboard/search?tag=${tag.name}`)}
                 >
-                  <Tag className="h-4 w-4 mr-2" />
+                  <Tag className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span className={cn(collapsed && !isMobileView && "sr-only")}>{tag.name}</span>
                 </div>
               ))
@@ -413,16 +461,16 @@ export function Sidebar() {
         </Collapsible>
       </div>
 
-      <div className="p-3 border-t border-gray-200">
+      <div className={cn("p-3 border-t border-gray-200", collapsed && !isMobileView && "p-2")}>
         <Button
           onClick={() => handleNavigation("/dashboard/new-note")}
           className={cn(
-            "w-full justify-start bg-transparent hover:bg-gray-100 text-gray-700 border border-gray-200",
-            collapsed && !isMobileView && "justify-center p-2",
+            "w-full bg-transparent hover:bg-gray-100 text-gray-700 border border-gray-200",
+            collapsed && !isMobileView ? "justify-center p-2" : "justify-start",
           )}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          <span className={cn(collapsed && !isMobileView && "sr-only")}>New Note</span>
+          <Plus className="h-4 w-4 flex-shrink-0" />
+          <span className={cn("ml-2", collapsed && !isMobileView && "sr-only")}>New Note</span>
         </Button>
       </div>
     </>

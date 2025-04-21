@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MoonIcon, SunIcon, PlusCircle, Menu } from "lucide-react"
+import { MoonIcon, SunIcon, PlusCircle, Menu, PanelLeft } from "lucide-react"
 import { useTheme } from "next-themes"
 import { NotoLogo } from "./noto-logo"
 import { useRouter } from "next/navigation"
@@ -22,14 +22,26 @@ export function Header() {
   const { setTheme, theme } = useTheme()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
+
+    // Check sidebar state from localStorage
+    const savedState = localStorage.getItem("sidebar-collapsed")
+    if (savedState !== null) {
+      setSidebarCollapsed(savedState === "true")
+    }
   }, [])
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
+  }
+
+  const toggleSidebar = () => {
+    document.dispatchEvent(new CustomEvent("toggle-sidebar"))
+    setSidebarCollapsed(!sidebarCollapsed)
   }
 
   const userInitials = user?.email ? user.email.substring(0, 2).toUpperCase() : "UN"
@@ -38,6 +50,9 @@ export function Header() {
     <header className="sticky top-0 z-10 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-2 sm:px-4 py-2">
       <div className="flex items-center justify-between h-12">
         <div className="flex items-center">
+          <Button variant="ghost" size="icon" className="md:flex hidden" onClick={toggleSidebar}>
+            <PanelLeft className="h-5 w-5" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
