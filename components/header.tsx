@@ -11,10 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MoonIcon, SunIcon, PlusCircle } from "lucide-react"
+import { MoonIcon, SunIcon, PlusCircle, Menu } from "lucide-react"
 import { useTheme } from "next-themes"
 import { NotoLogo } from "./noto-logo"
-import { Sidebar } from "./sidebar"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -39,8 +38,15 @@ export function Header() {
     <header className="sticky top-0 z-10 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-2 sm:px-4 py-2">
       <div className="flex items-center justify-between h-12">
         <div className="flex items-center">
-          <Sidebar />
-          <NotoLogo size="sm" className="ml-2 md:hidden" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => document.dispatchEvent(new CustomEvent("toggle-sidebar"))}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <NotoLogo size="sm" className="ml-2" />
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">

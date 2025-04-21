@@ -77,11 +77,8 @@ export function Sidebar() {
 
       setScreenSize(newSize)
 
-      // Auto-collapse on smaller screens, but don't change user preference on larger screens
-      if (width < BREAKPOINTS.md) {
-        setCollapsed(true)
-      } else if (width >= BREAKPOINTS.lg) {
-        // Only restore from localStorage on larger screens
+      // For larger screens, only use the saved preference
+      if (width >= BREAKPOINTS.md) {
         const savedState = localStorage.getItem("sidebar-collapsed")
         if (savedState !== null) {
           setCollapsed(savedState === "true")
@@ -89,6 +86,9 @@ export function Sidebar() {
           // Default to expanded if no saved preference
           setCollapsed(false)
         }
+      } else {
+        // For smaller screens, always start collapsed
+        setCollapsed(true)
       }
     }
 
@@ -204,6 +204,23 @@ export function Sidebar() {
 
     fetchData()
   }, [user, supabase])
+
+  // Listen for custom toggle event from header
+  useEffect(() => {
+    const handleToggleSidebar = () => {
+      if (screenSize === "xs" || screenSize === "sm") {
+        setIsOpen(!isOpen)
+      } else {
+        setCollapsed(!collapsed)
+      }
+    }
+
+    document.addEventListener("toggle-sidebar", handleToggleSidebar)
+
+    return () => {
+      document.removeEventListener("toggle-sidebar", handleToggleSidebar)
+    }
+  }, [isOpen, collapsed, screenSize])
 
   const toggleSection = (section: string) => {
     setExpandedSections({
@@ -441,9 +458,11 @@ export function Sidebar() {
     <div
       ref={sidebarRef}
       className={cn(
-        "hidden md:flex h-screen flex-col border-r border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden transition-all duration-300 ease-in-out z-20",
+        "h-screen flex-col border-r border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden transition-all duration-300 ease-in-out z-20",
         collapsed ? "w-16" : "w-64",
-        screenSize === "md" && "absolute left-0 top-0 shadow-lg",
+        screenSize === "md" ? "absolute left-0 top-0 shadow-lg" : "relative",
+        // Always display the sidebar on larger screens
+        "hidden md:flex",
       )}
     >
       <SidebarContent />

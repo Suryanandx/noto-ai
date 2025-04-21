@@ -1,5 +1,6 @@
 import type React from "react"
 import { Header } from "@/components/header"
+import { Sidebar } from "@/components/sidebar"
 
 export default function DashboardLayout({
   children,
@@ -7,7 +8,8 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen bg-white dark:bg-gray-950 relative">
+    <div className="flex min-h-screen bg-white dark:bg-gray-950">
+      <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto">
