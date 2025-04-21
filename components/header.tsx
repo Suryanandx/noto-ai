@@ -13,7 +13,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MoonIcon, SunIcon, PlusCircle, Menu, PanelLeft } from "lucide-react"
 import { useTheme } from "next-themes"
-import { NotoLogo } from "./noto-logo"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -33,6 +32,17 @@ export function Header() {
     if (savedState !== null) {
       setSidebarCollapsed(savedState === "true")
     }
+
+    // Listen for sidebar state changes
+    const handleStorageChange = () => {
+      const currentState = localStorage.getItem("sidebar-collapsed")
+      if (currentState !== null) {
+        setSidebarCollapsed(currentState === "true")
+      }
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
   }, [])
 
   const toggleTheme = () => {
@@ -50,6 +60,7 @@ export function Header() {
     <header className="sticky top-0 z-10 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-2 sm:px-4 py-2">
       <div className="flex items-center justify-between h-12">
         <div className="flex items-center">
+          {/* Sidebar toggle button */}
           <Button variant="ghost" size="icon" className="md:flex hidden" onClick={toggleSidebar}>
             <PanelLeft className="h-5 w-5" />
           </Button>
@@ -61,10 +72,12 @@ export function Header() {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <NotoLogo size="sm" className="ml-2" />
+
+          {/* Page title will be added by individual pages if needed */}
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
+          {/* New Note button */}
           <Button
             variant="outline"
             size="sm"
@@ -85,6 +98,7 @@ export function Header() {
             <PlusCircle className="h-5 w-5" />
           </Button>
 
+          {/* Theme toggle */}
           {mounted && (
             <Button
               variant="ghost"
@@ -97,6 +111,7 @@ export function Header() {
             </Button>
           )}
 
+          {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">

@@ -506,12 +506,12 @@ export function Sidebar() {
     <div
       ref={sidebarRef}
       className={cn(
-        "h-screen flex-col border-r border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden transition-all duration-300 ease-in-out z-20",
+        "fixed top-0 left-0 h-screen flex-col border-r border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-800 overflow-hidden transition-all duration-300 ease-in-out z-20",
         collapsed ? "w-16" : "w-64",
-        screenSize === "md" ? "absolute left-0 top-0 shadow-lg" : "relative",
         // Always display the sidebar on larger screens
         "hidden md:flex",
       )}
+      style={{ paddingTop: "0", height: "100vh" }}
     >
       <SidebarContent />
     </div>
