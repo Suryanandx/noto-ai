@@ -53,7 +53,7 @@ NOTO AI is an intelligent note-taking application that leverages AI to enhance y
 
 1. Clone the repository:
    \`\`\`bash
-   git clone https://github.com/yourusername/noto-ai.git
+   git clone https://github.com/Suryanandx/noto-ai.git
    cd noto-ai
    \`\`\`
 
