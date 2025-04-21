@@ -1,30 +1,161 @@
-# Fork of Smart Notes App
+# NOTO AI - Smart Notes App
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+![NOTO AI Logo](public/favicon.svg)
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/suryanand-sunils-projects/v0-fork-of-smart-notes-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/KlYejHuK0Qh)
+NOTO AI is an intelligent note-taking application that leverages AI to enhance your note-taking experience. Built by Suryanand, this application combines the simplicity of traditional note-taking with the power of AI to help you organize, analyze, and extract insights from your notes.
 
-## Overview
+## ✨ Features
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+### Core Functionality
+- 📝 Create, edit, and organize notes with a clean, intuitive interface
+- 🏷️ Tag-based organization system
+- 🔍 Powerful search capabilities across all notes
+- 📱 Fully responsive design that works on all devices
+- 🌓 Light and dark mode support
+- 💾 Auto-save functionality to prevent data loss
 
-## Deployment
+### AI-Powered Features
+- 🤖 Automatic content analysis with Grok AI
+- 📊 Sentiment analysis to understand the tone of your notes
+- 🏷️ Smart tag suggestions based on content
+- ✅ Task extraction to identify actionable items
+- 📋 Weekly summaries of your notes
+- 🔄 Content translation to multiple languages
+- 💡 "What's Missing" insights to improve your notes
+- 🧵 "Threadify" feature to convert notes into social media threads
 
-Your project is live at:
+### User Experience
+- 🔄 Draft recovery system to restore unsaved work
+- 📊 Visual analytics of your note-taking patterns
+- 📱 Touch-friendly interface with swipe gestures
+- ⚡ Performance optimizations for large documents
 
-**[https://vercel.com/suryanand-sunils-projects/v0-fork-of-smart-notes-app](https://vercel.com/suryanand-sunils-projects/v0-fork-of-smart-notes-app)**
+## 🛠️ Technologies Used
 
-## Build your app
+- **Frontend**: Next.js 14 (App Router), React, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **AI Integration**: Grok AI (via AI SDK)
+- **State Management**: React Context API
+- **Deployment**: Vercel
 
-Continue building your app on:
+## 🚀 Getting Started
 
-**[https://v0.dev/chat/projects/KlYejHuK0Qh](https://v0.dev/chat/projects/KlYejHuK0Qh)**
+### Prerequisites
 
-## How It Works
+- Node.js 18.x or higher
+- npm or yarn
+- Supabase account
+- Grok AI API key
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### Installation
+
+1. Clone the repository:
+   \`\`\`bash
+   git clone https://github.com/yourusername/noto-ai.git
+   cd noto-ai
+   \`\`\`
+
+2. Install dependencies:
+   \`\`\`bash
+   npm install
+   # or
+   yarn install
+   \`\`\`
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory with the following variables:
+   \`\`\`
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   XAI_API_KEY=your_grok_api_key
+   \`\`\`
+
+4. Set up the database:
+   Run the SQL scripts in the `database` directory to create the necessary tables and relationships in your Supabase project.
+
+5. Run the development server:
+   \`\`\`bash
+   npm run dev
+   # or
+   yarn dev
+   \`\`\`
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## 📁 Project Structure
+
+\`\`\`
+noto-ai/
+├── app/                  # Next.js App Router pages
+│   ├── dashboard/        # Dashboard and note management
+│   ├── login/            # Authentication pages
+│   └── api/              # API routes
+├── components/           # React components
+│   ├── ui/               # UI components (shadcn/ui)
+│   └── ...               # Feature-specific components
+├── context/              # React Context providers
+├── hooks/                # Custom React hooks
+├── lib/                  # Utility functions and libraries
+│   ├── ai.ts             # AI integration functions
+│   ├── supabase.ts       # Supabase client setup
+│   └── ...               # Other utilities
+├── public/               # Static assets
+└── types/                # TypeScript type definitions
+\`\`\`
+
+## 🧭 Navigation Guide
+
+- **Home Page**: Dashboard with note cards and weekly summary
+- **New Note**: Create a new note with AI assistance
+- **Edit Note**: Edit existing notes with full AI features
+- **Search**: Search across all notes with tag filtering
+- **Settings**: User profile and application settings
+
+## 💻 Usage Instructions
+
+### Creating a New Note
+1. Click the "New Note" button in the sidebar or dashboard
+2. Enter a title (or let AI suggest one)
+3. Write your note content
+4. Add tags manually or use AI-suggested tags
+5. Click "Save" to store your note
+
+### Using AI Features
+1. While editing a note, click "Analyze with AI" in the AI panel
+2. Review the AI analysis including summary, sentiment, and suggested tags
+3. Apply any suggestions with a single click
+4. Try specialized tools like translation or "What's Missing"
+
+### Organizing Notes
+1. Use tags to categorize your notes
+2. Search for notes by content or tags
+3. View your weekly summary to track patterns and insights
+
+### Keyboard Shortcuts
+- `Ctrl+S`: Save note
+- `Ctrl+F`: Search within note
+- `Ctrl+B`: Toggle sidebar
+
+## 🔒 Security
+
+- All data is stored in your Supabase database
+- Authentication is handled securely via Supabase Auth
+- API keys are never exposed to the client
+
+## 🙏 Credits
+
+- Designed and developed by Suryanand
+- AI functionality powered by Grok
+- UI components from shadcn/ui
+- Icons from Lucide React
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+For questions or support, please contact Suryanand at suryanand@example.com
