@@ -67,11 +67,24 @@ NOTO AI is an intelligent note-taking application that leverages AI to enhance y
 3. Set up environment variables:
    Create a `.env.local` file in the root directory with the following variables:
    \`\`\`
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   XAI_API_KEY=your_grok_api_key
-   NEXT_PUBLIC_BASE_URL=your_base_url
+   POSTGRES_URL
+   POSTGRES_PRISMA_URL
+   SUPABASE_URL
+   NEXT_PUBLIC_SUPABASE_URL
+   POSTGRES_URL_NON_POOLING
+   SUPABASE_JWT_SECRET
+   POSTGRES_USER
+   NEXT_PUBLIC_SUPABASE_ANON_KEY
+   POSTGRES_PASSWORD
+   POSTGRES_DATABASE
+   SUPABASE_SERVICE_ROLE_KEY
+   POSTGRES_HOST
+   SUPABASE_ANON_KEY
+   XAI_API_KEY
+   NEXT_PUBLIC_BASE_URL
+   NEXT_PUBLIC_XAI_API_KEY
+   GROK_API_KEY
+   NEXT_PUBLIC_GROK_API_KEY
    \`\`\`
 
 4. Set up the database:
