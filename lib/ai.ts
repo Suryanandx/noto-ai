@@ -1,6 +1,20 @@
 import { generateText } from "ai"
 import { xai } from "@ai-sdk/xai"
 
+// Add this helper function at the top of the file
+function getXaiClient() {
+  // Check for environment variable
+  const apiKey = process.env.XAI_API_KEY
+
+  if (!apiKey) {
+    console.warn("XAI_API_KEY environment variable is not set. AI features will not work.")
+    throw new Error("XAI API key is missing. Please set the XAI_API_KEY environment variable.")
+  }
+
+  // Return configured client
+  return xai("grok-2", { apiKey })
+}
+
 // Auto Title Generator
 export async function generateTitle(content: string) {
   try {
@@ -11,7 +25,7 @@ export async function generateTitle(content: string) {
     Return only the title text without any additional comments.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
     })
@@ -33,7 +47,7 @@ export async function generateSummary(content: string) {
     Return only the summary without any additional comments.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
     })
@@ -55,7 +69,7 @@ export async function suggestTags(content: string) {
     Return the tags as a JSON array of strings without any additional text.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
     })
@@ -84,7 +98,7 @@ export async function categorizeNote(content: string) {
     Return only the category name without any additional text.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.2,
     })
@@ -104,7 +118,7 @@ export async function analyzeSentiment(content: string) {
     ${content}`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.2,
     })
@@ -131,7 +145,7 @@ export async function extractTasks(content: string) {
     ${content}`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.2,
     })
@@ -158,7 +172,7 @@ export async function translateNote(content: string, targetLanguage: string) {
       Provide only the translated text without any additional comments.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
     })
@@ -180,7 +194,7 @@ export async function generateInsight(content: string) {
     Provide a concise, thoughtful insight in 1-2 sentences.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.7,
     })
@@ -206,7 +220,7 @@ export async function generateWeeklySummary(notes: { title: string; content: str
     Format your response with clear sections for themes, trends, and a brief overall summary.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.5,
     })
@@ -228,7 +242,7 @@ export async function threadifyNote(content: string) {
     Format as a JSON array of strings, where each string is one tweet in the thread.`
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.4,
     })
@@ -275,7 +289,7 @@ export async function analyzeNote(content: string) {
     `
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
     })

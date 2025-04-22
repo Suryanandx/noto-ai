@@ -455,9 +455,21 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
       }
     } catch (error) {
       console.error("Error analyzing note:", error)
+
+      // Improved error handling with more specific messages
+      let errorMessage = "Failed to analyze note with AI"
+
+      if (error instanceof Error) {
+        if (error.message.includes("API key")) {
+          errorMessage = "AI service API key is missing or invalid. Please check your environment variables."
+        } else if (error.message.includes("network")) {
+          errorMessage = "Network error while connecting to AI service. Please check your connection."
+        }
+      }
+
       toast({
-        title: "Error",
-        description: "Failed to analyze note with AI",
+        title: "AI Analysis Error",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {

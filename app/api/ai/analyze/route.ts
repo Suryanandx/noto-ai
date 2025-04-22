@@ -2,6 +2,19 @@ import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
 import { xai } from "@ai-sdk/xai"
 
+function getXaiClient() {
+  // Check for environment variable
+  const apiKey = process.env.XAI_API_KEY
+
+  if (!apiKey) {
+    console.warn("XAI_API_KEY environment variable is not set. AI features will not work.")
+    throw new Error("XAI API key is missing. Please set the XAI_API_KEY environment variable.")
+  }
+
+  // Return configured client
+  return xai("grok-2", { apiKey })
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { content } = await req.json()
@@ -37,7 +50,7 @@ export async function POST(req: NextRequest) {
     `
 
     const { text } = await generateText({
-      model: xai("grok-2"),
+      model: getXaiClient(),
       prompt,
       temperature: 0.3,
       maxTokens: 1000,
