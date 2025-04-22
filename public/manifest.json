@@ -1,0 +1,44 @@
+{
+  "name": "NOTO AI - Smart Notes Powered by AI",
+  "short_name": "NOTO AI",
+  "description": "AI-powered note-taking app that helps you organize your thoughts, extract insights, and boost productivity with Grok AI integration.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities", "ai"],
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "NOTO AI Dashboard"
+    },
+    {
+      "src": "/screenshots/editor.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "NOTO AI Note Editor"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://noto-ai.suryanand.com"
+    }
+  ]
+}
