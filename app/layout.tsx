@@ -85,7 +85,6 @@ export const metadata: Metadata = {
     },
   },
   category: "productivity",
-    generator: 'v0.dev'
 }
 
 export const viewport: Viewport = {

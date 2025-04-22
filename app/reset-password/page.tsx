@@ -2,37 +2,52 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, ArrowLeft, Check, Loader2 } from "lucide-react"
+import { AlertCircle, ArrowLeft, Check, Eye, EyeOff, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { NotoLogo } from "@/components/noto-logo"
 import Link from "next/link"
 import { getBrowserClient } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("")
+export default function ResetPasswordPage() {
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [emailValid, setEmailValid] = useState<boolean | null>(null)
+  const [passwordValid, setPasswordValid] = useState<boolean | null>(null)
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null)
 
+  const router = useRouter()
   const supabase = getBrowserClient()
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+  // Password validation
+  useEffect(() => {
+    if (password) {
+      setPasswordValid(password.length >= 6)
+    }
+  }, [password])
+
+  // Confirm password validation
+  useEffect(() => {
+    if (confirmPassword) {
+      setPasswordsMatch(password === confirmPassword)
+    }
+  }, [confirmPassword, password])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validateEmail(email)) {
-      setEmailValid(false)
+    // Validate form
+    if (!passwordValid || !passwordsMatch) {
+      setError("Please fix the password errors before submitting")
       return
     }
 
@@ -40,11 +55,8 @@ export default function ForgotPasswordPage() {
     setError(null)
 
     try {
-      // Get the base URL from environment variables or default to the current origin
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${baseUrl}/reset-password`,
+      const { error } = await supabase.auth.updateUser({
+        password,
       })
 
       if (error) {
@@ -52,8 +64,13 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(true)
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        router.push("/login?reset=true")
+      }, 3000)
     } catch (error: any) {
-      setError(error.message || "Failed to send password reset email")
+      setError(error.message || "Failed to reset password")
     } finally {
       setIsLoading(false)
     }
@@ -98,10 +115,10 @@ export default function ForgotPasswordPage() {
             <NotoLogo size="lg" className="mb-8" />
           </motion.div>
           <motion.h1 variants={itemVariants} className="text-4xl font-bold mb-6">
-            Forgot Your Password?
+            Reset Your Password
           </motion.h1>
           <motion.p variants={itemVariants} className="text-xl mb-8 max-w-md">
-            Don't worry, it happens to the best of us. Let's get you back into your account.
+            Create a new secure password for your NOTO AI account.
           </motion.p>
 
           <motion.div variants={containerVariants} className="space-y-6">
@@ -110,8 +127,8 @@ export default function ForgotPasswordPage() {
                 <Check className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Simple Recovery</h3>
-                <p className="text-white/80">We'll send you a secure link to reset your password</p>
+                <h3 className="font-semibold text-lg">Strong Password</h3>
+                <p className="text-white/80">Choose a password that's at least 6 characters long</p>
               </div>
             </motion.div>
 
@@ -120,8 +137,8 @@ export default function ForgotPasswordPage() {
                 <Check className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Quick Process</h3>
-                <p className="text-white/80">You'll be back to your notes in no time</p>
+                <h3 className="font-semibold text-lg">Account Security</h3>
+                <p className="text-white/80">Your new password will be used for future logins</p>
               </div>
             </motion.div>
           </motion.div>
@@ -150,9 +167,7 @@ export default function ForgotPasswordPage() {
               <NotoLogo size="lg" />
             </div>
             <CardTitle className="text-2xl font-bold text-center">Reset Your Password</CardTitle>
-            <CardDescription className="text-center">
-              Enter your email address and we'll send you a link to reset your password
-            </CardDescription>
+            <CardDescription className="text-center">Please enter a new password for your account</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -166,10 +181,9 @@ export default function ForgotPasswordPage() {
                 <Alert className="bg-green-50 border-green-200 text-green-800">
                   <Check className="h-4 w-4" />
                   <AlertDescription>
-                    Password reset link has been sent to your email address. Please check your inbox.
+                    Your password has been reset successfully! Redirecting to login...
                   </AlertDescription>
                 </Alert>
-                <p className="text-sm text-gray-500 mt-2">If you don't see the email, please check your spam folder.</p>
 
                 <motion.div
                   className="w-full flex justify-center"
@@ -191,39 +205,82 @@ export default function ForgotPasswordPage() {
                 variants={containerVariants}
               >
                 <motion.div className="space-y-2" variants={itemVariants}>
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    New Password
                   </Label>
                   <div className="relative">
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="name@example.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value)
-                        setEmailValid(validateEmail(e.target.value))
-                      }}
-                      className={`${emailValid === false ? "border-red-500 focus-visible:ring-red-500" : "focus-visible:ring-purple-500"} pl-3 pr-3 py-2 h-11`}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={`${passwordValid === false ? "border-red-500 focus-visible:ring-red-500" : "focus-visible:ring-purple-500"} pl-3 pr-10 py-2 h-11`}
                       required
                     />
-                    {emailValid === true && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                      >
-                        <Check className="h-4 w-4 text-green-500" />
-                      </motion.div>
-                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+                    </Button>
                   </div>
-                  {emailValid === false && (
+                  {passwordValid === false && (
                     <motion.p
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="text-xs text-red-500"
                     >
-                      Please enter a valid email address
+                      Password must be at least 6 characters
+                    </motion.p>
+                  )}
+
+                  {/* Password strength indicator */}
+                  {password && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-1">
+                      <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                        <motion.div
+                          className={`h-full ${password.length < 6 ? "bg-red-500" : password.length < 10 ? "bg-yellow-500" : "bg-green-500"}`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min(100, (password.length / 12) * 100)}%` }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
+                      <p className="text-xs mt-1 text-gray-500">
+                        {password.length < 6
+                          ? "Weak password"
+                          : password.length < 10
+                            ? "Moderate password"
+                            : "Strong password"}
+                      </p>
+                    </motion.div>
+                  )}
+                </motion.div>
+
+                <motion.div className="space-y-2" variants={itemVariants}>
+                  <Label htmlFor="confirm-password" className="text-sm font-medium">
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`${passwordsMatch === false ? "border-red-500 focus-visible:ring-red-500" : "focus-visible:ring-purple-500"} pl-3 pr-3 py-2 h-11`}
+                      required
+                    />
+                  </div>
+                  {passwordsMatch === false && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-red-500"
+                    >
+                      Passwords do not match
                     </motion.p>
                   )}
                 </motion.div>
@@ -246,10 +303,10 @@ export default function ForgotPasswordPage() {
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
+                        Resetting Password...
                       </>
                     ) : (
-                      "Send Reset Link"
+                      "Reset Password"
                     )}
                   </Button>
                 </motion.div>

@@ -71,6 +71,7 @@ NOTO AI is an intelligent note-taking application that leverages AI to enhance y
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    XAI_API_KEY=your_grok_api_key
+   NEXT_PUBLIC_BASE_URL=your_base_url
    \`\`\`
 
 4. Set up the database:
@@ -100,11 +101,116 @@ noto-ai/
 ├── hooks/                # Custom React hooks
 ├── lib/                  # Utility functions and libraries
 │   ├── ai.ts             # AI integration functions
+│   ├── env.ts            # Environment configuration
 │   ├── supabase.ts       # Supabase client setup
 │   └── ...               # Other utilities
 ├── public/               # Static assets
 └── types/                # TypeScript type definitions
 \`\`\`
+
+## 🔌 API Endpoints
+
+NOTO AI provides several API endpoints for interacting with the application's AI features:
+
+### AI Service Endpoint
+- **URL**: `/api/ai/service`
+- **Method**: `POST`
+- **Description**: General-purpose AI service endpoint for text generation
+- **Request Body**:
+  \`\`\`json
+  {
+    "operation": "string",
+    "prompt": "string",
+    "options": {}
+  }
+  \`\`\`
+- **Response**: 
+  \`\`\`json
+  {
+    "success": true,
+    "text": "Generated text response"
+  }
+  \`\`\`
+
+### Note Analysis Endpoint
+- **URL**: `/api/ai/analyze`
+- **Method**: `POST`
+- **Description**: Analyzes note content to extract summary, tags, sentiment, tasks, and more
+- **Request Body**:
+  \`\`\`json
+  {
+    "content": "Your note content here"
+  }
+  \`\`\`
+- **Response**:
+  \`\`\`json
+  {
+    "summary": "Brief summary of the note",
+    "suggestedTags": ["tag1", "tag2", "tag3"],
+    "sentiment": "positive/neutral/negative",
+    "tasks": ["task1", "task2"],
+    "category": "category name",
+    "mood": {
+      "emoji": "😊",
+      "mood": "Happy"
+    }
+  }
+  \`\`\`
+
+### Weekly Summary Endpoint
+- **URL**: `/api/ai/weekly-summary`
+- **Method**: `POST`
+- **Description**: Generates a summary of notes from the past week
+- **Request Body**:
+  \`\`\`json
+  {
+    "notes": [
+      {
+        "title": "Note title",
+        "content": "Note content",
+        "date": "YYYY-MM-DD"
+      }
+    ]
+  }
+  \`\`\`
+- **Response**:
+  \`\`\`json
+  {
+    "summary": "Weekly summary text"
+  }
+  \`\`\`
+
+### AI Status Endpoint
+- **URL**: `/api/ai/status`
+- **Method**: `GET`
+- **Description**: Checks the status of the AI service
+- **Response**:
+  \`\`\`json
+  {
+    "status": "operational/degraded/error/unconfigured",
+    "message": "Status message",
+    "configured": true
+  }
+  \`\`\`
+
+### Test AI Endpoint
+- **URL**: `/api/test-ai`
+- **Method**: `GET`
+- **Description**: Tests the AI service and returns environment variable status
+- **Response**:
+  \`\`\`json
+  {
+    "status": "success/error",
+    "message": "Status message",
+    "response": "AI response text",
+    "availableEnvVars": {
+      "XAI_API_KEY": true,
+      "NEXT_PUBLIC_XAI_API_KEY": true,
+      "GROK_API_KEY": false,
+      "NEXT_PUBLIC_GROK_API_KEY": false
+    }
+  }
+  \`\`\`
 
 ## 💻 Interface Layout
 
@@ -167,6 +273,7 @@ noto-ai/
 - All data is stored in your Supabase database
 - Authentication is handled securely via Supabase Auth
 - API keys are never exposed to the client
+- Environment variables are properly configured for client and server usage
 
 ## 🙏 Credits
 
@@ -181,4 +288,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-For questions or support, please contact Suryanand at suryanand@example.com
+For questions or support, please contact Suryanand at work@suryanand.com

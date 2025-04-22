@@ -94,12 +94,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Update the signUp function to use the correct redirect URL
   const signUp = async (email: string, password: string, name: string) => {
     try {
       const supabase = getSupabase()
       if (!supabase) {
         return { error: new Error("Supabase client initialization failed") }
       }
+
+      // Get the base URL from environment variables or default to the current origin
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -108,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: {
             display_name: name,
           },
+          emailRedirectTo: `${baseUrl}/auth/callback`,
         },
       })
 
@@ -120,7 +125,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (profileError) {
           console.error("Error creating user profile:", profileError)
         }
-        router.push("/dashboard")
+
+        // Don't redirect - wait for email confirmation
+        // router.push("/dashboard");
       }
 
       return { error }

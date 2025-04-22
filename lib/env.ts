@@ -1,10 +1,3 @@
-/**
- * Environment variables configuration
- * This file centralizes access to environment variables and provides
- * type-safe access with fallbacks for development
- */
-
-// Supabase configuration
 export const SUPABASE_CONFIG = {
   // Client-side variables (NEXT_PUBLIC_ prefix)
   url: process.env.NEXT_PUBLIC_SUPABASE_URL || "",

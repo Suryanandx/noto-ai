@@ -93,7 +93,7 @@ export default function TermsPage() {
           </p>
 
           <h2>11. Contact Information</h2>
-          <p>If you have any questions about these Terms, please contact us at support@suryanand.com.</p>
+          <p>If you have any questions about these Terms, please contact us at work@suryanand.com.</p>
         </div>
 
         <div className="mt-12 text-center text-sm text-gray-500">

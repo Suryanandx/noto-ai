@@ -1,4 +1,3 @@
-// Add a function to check if AI service is configured
 export function isAIServiceConfigured() {
   // Check if any of the AI API keys are available
   return !!(process.env.NEXT_PUBLIC_XAI_API_KEY || process.env.NEXT_PUBLIC_GROK_API_KEY)

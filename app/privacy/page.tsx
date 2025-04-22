@@ -97,7 +97,7 @@ export default function PrivacyPage() {
           <h2>7. Your Rights</h2>
           <p>
             You may access, correct, or delete your personal information by logging into your account settings. If you
-            wish to delete your account, please contact us at support@suryanand.com.
+            wish to delete your account, please contact us at work@suryanand.com.
           </p>
 
           <h2>8. Changes to this Privacy Policy</h2>
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
           </p>
 
           <h2>9. Contact Information</h2>
-          <p>If you have any questions about this Privacy Policy, please contact us at privacy@suryanand.com.</p>
+          <p>If you have any questions about this Privacy Policy, please contact us at work@suryanand.com.</p>
         </div>
 
         <div className="mt-12 text-center text-sm text-gray-500">

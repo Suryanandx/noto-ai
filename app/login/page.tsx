@@ -28,6 +28,24 @@ export default function LoginPage() {
   const [activeTab, setActiveTab] = useState("login")
   const [success, setSuccess] = useState<string | null>(null)
 
+  // Add this to the top of the component, after the useState declarations
+  const searchParams = useSearchParams()
+  const verified = searchParams.get("verified") === "true"
+
+  // Add this after the useState declarations
+  useEffect(() => {
+    if (verified) {
+      setSuccess("Email verified successfully! You can now log in.")
+      setActiveTab("login")
+    }
+
+    const reset = searchParams.get("reset") === "true"
+    if (reset) {
+      setSuccess("Password reset successfully! You can now log in with your new password.")
+      setActiveTab("login")
+    }
+  }, [verified, searchParams])
+
   // Validation states
   const [emailValid, setEmailValid] = useState<boolean | null>(null)
   const [passwordValid, setPasswordValid] = useState<boolean | null>(null)
@@ -36,7 +54,6 @@ export default function LoginPage() {
 
   const { signIn, signUp } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const redirectTo = searchParams.get("redirectTo") || "/dashboard"
 
   // Set active tab based on URL parameter
@@ -113,10 +130,8 @@ export default function LoginPage() {
       if (error) {
         setError("Error creating account: " + error.message)
       } else {
-        setSuccess("Account created successfully! Redirecting to dashboard...")
-        setTimeout(() => {
-          router.push(redirectTo)
-        }, 1500)
+        setSuccess("Account created successfully! Please check your email for a confirmation link.")
+        // Don't redirect immediately - wait for email confirmation
       }
     } catch (error) {
       setError("An unexpected error occurred")
@@ -337,6 +352,15 @@ export default function LoginPage() {
                       <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>{error}</AlertDescription>
+                      </Alert>
+                    </motion.div>
+                  )}
+
+                  {verified && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                      <Alert className="bg-green-50 border-green-200 text-green-800">
+                        <Check className="h-4 w-4" />
+                        <AlertDescription>Email verified successfully! You can now log in.</AlertDescription>
                       </Alert>
                     </motion.div>
                   )}
