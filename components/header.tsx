@@ -15,6 +15,7 @@ import { MoonIcon, SunIcon, PlusCircle, Menu, PanelLeft } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { AIStatusIndicator } from "@/components/ai-status-indicator"
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -77,6 +78,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
+          <AIStatusIndicator />
           {/* New Note button */}
           <Button
             variant="outline"

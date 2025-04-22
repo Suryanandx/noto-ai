@@ -5,13 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Sparkles, Calendar, BarChart, Tag } from "lucide-react"
+import { Sparkles, Calendar, BarChart, Tag, AlertCircle } from "lucide-react"
 import { getBrowserClient } from "@/lib/supabase"
 import { useAuth } from "@/context/auth-context"
-import { generateWeeklySummary } from "@/lib/ai"
 import { format, subDays } from "date-fns"
 import type { Note } from "@/types/supabase"
 import { MarkdownRenderer } from "./markdown-renderer"
+import { useToast } from "@/hooks/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function WeeklySummary() {
   const [isLoading, setIsLoading] = useState(false)
@@ -20,8 +21,10 @@ export function WeeklySummary() {
   const [summary, setSummary] = useState<string | null>(null)
   const [topTags, setTopTags] = useState<{ name: string; count: number }[]>([])
   const [moodDistribution, setMoodDistribution] = useState<{ mood: string; count: number }[]>([])
+  const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
   const supabase = getBrowserClient()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (!user) return
@@ -102,6 +105,7 @@ export function WeeklySummary() {
 
     try {
       setIsGenerating(true)
+      setError(null)
 
       const notesForSummary = notes.map((note) => ({
         title: note.title || "Untitled",
@@ -109,10 +113,35 @@ export function WeeklySummary() {
         date: format(new Date(note.created_at), "yyyy-MM-dd"),
       }))
 
-      const result = await generateWeeklySummary(notesForSummary)
-      setSummary(result)
+      // Use the API endpoint
+      const response = await fetch("/api/ai/weekly-summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notes: notesForSummary }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (!data.summary) {
+        throw new Error("No summary returned from API")
+      }
+
+      setSummary(data.summary)
     } catch (error) {
       console.error("Error generating weekly summary:", error)
+      setError(error instanceof Error ? error.message : "Failed to generate weekly summary")
+      toast({
+        title: "Error",
+        description: "Failed to generate weekly summary. Please try again later.",
+        variant: "destructive",
+      })
     } finally {
       setIsGenerating(false)
     }
@@ -168,14 +197,21 @@ export function WeeklySummary() {
           </TabsList>
 
           <TabsContent value="summary">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             {summary ? (
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <MarkdownRenderer content={summary} />
                 </div>
-                <Button variant="outline" size="sm" onClick={handleGenerateSummary}>
+                <Button variant="outline" size="sm" onClick={handleGenerateSummary} disabled={isGenerating}>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Regenerate
+                  {isGenerating ? "Regenerating..." : "Regenerate"}
                 </Button>
               </div>
             ) : (

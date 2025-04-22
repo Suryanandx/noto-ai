@@ -2,19 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
 import { xai } from "@ai-sdk/xai"
 
-function getXaiClient() {
-  // Check for environment variable
-  const apiKey = process.env.XAI_API_KEY
-
-  if (!apiKey) {
-    console.warn("XAI_API_KEY environment variable is not set. AI features will not work.")
-    throw new Error("XAI API key is missing. Please set the XAI_API_KEY environment variable.")
-  }
-
-  // Return configured client
-  return xai("grok-2", { apiKey })
-}
-
+// Update the POST function to better handle environment variables
 export async function POST(req: NextRequest) {
   try {
     const { content } = await req.json()
@@ -22,6 +10,28 @@ export async function POST(req: NextRequest) {
     if (!content || typeof content !== "string") {
       return NextResponse.json({ error: "Content is required and must be a string" }, { status: 400 })
     }
+
+    // Get API key from server environment variables - server-side variables should NOT have NEXT_PUBLIC_prefix
+    const apiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY
+
+    // Fallback to client-side variables if server-side ones are not available
+    const fallbackKey = process.env.NEXT_PUBLIC_XAI_API_KEY || process.env.NEXT_PUBLIC_GROK_API_KEY
+
+    // Use the server-side key first, then fallback to client-side key
+    const finalApiKey = apiKey || fallbackKey
+
+    if (!finalApiKey) {
+      console.error("API key not found in server environment")
+      return NextResponse.json(
+        {
+          error: "AI service not configured. Please add XAI_API_KEY or GROK_API_KEY to your environment variables.",
+        },
+        { status: 500 },
+      )
+    }
+
+    // Create the AI model with the API key
+    const model = xai("grok-2", { apiKey: finalApiKey })
 
     const prompt = `
       Analyze the following note and provide:
@@ -50,7 +60,7 @@ export async function POST(req: NextRequest) {
     `
 
     const { text } = await generateText({
-      model: getXaiClient(),
+      model,
       prompt,
       temperature: 0.3,
       maxTokens: 1000,

@@ -26,6 +26,7 @@ import {
 import { translateNote, generateInsight, threadifyNote } from "@/lib/ai"
 import { cn } from "@/lib/utils"
 import { MarkdownRenderer } from "./markdown-renderer"
+import { AIErrorFallback } from "./ai-error-fallback"
 
 interface AIFeaturesPanelProps {
   noteContent: string
@@ -46,6 +47,7 @@ interface AIFeaturesPanelProps {
   onApplyTask?: (task: string) => void
   autoTitleSuggestion?: string
   onApplyTitle?: (title: string) => void
+  aiError?: string | null
 }
 
 export function AIFeaturesPanel({
@@ -57,6 +59,7 @@ export function AIFeaturesPanel({
   onApplyTask,
   autoTitleSuggestion,
   onApplyTitle,
+  aiError,
 }: AIFeaturesPanelProps) {
   const [activeTab, setActiveTab] = useState("summary")
   const [targetLanguage, setTargetLanguage] = useState("Spanish")
@@ -67,6 +70,7 @@ export function AIFeaturesPanel({
   const [threadParts, setThreadParts] = useState<string[]>([])
   const [isThreadifying, setIsThreadifying] = useState(false)
   const [categoryIcon, setCategoryIcon] = useState<React.ReactNode>(<Briefcase className="h-4 w-4" />)
+  // const [aiError, setAiError] = useState<string | null>(null)
 
   const { toast } = useToast()
 
@@ -107,10 +111,12 @@ export function AIFeaturesPanel({
 
     try {
       setIsTranslating(true)
+      // setAiError(null)
       const translated = await translateNote(noteContent, targetLanguage)
       setTranslatedText(translated || "Translation failed")
     } catch (error) {
       console.error("Error translating note:", error)
+      // setAiError("Failed to translate note. AI service may be unavailable.")
       toast({
         title: "Error",
         description: "Failed to translate note",
@@ -133,10 +139,12 @@ export function AIFeaturesPanel({
 
     try {
       setIsGeneratingInsight(true)
+      // setAiError(null)
       const generatedInsight = await generateInsight(noteContent)
       setInsight(generatedInsight || "Failed to generate insight")
     } catch (error) {
       console.error("Error generating insight:", error)
+      // setAiError("Failed to generate insight. AI service may be unavailable.")
       toast({
         title: "Error",
         description: "Failed to generate insight",
@@ -159,10 +167,12 @@ export function AIFeaturesPanel({
 
     try {
       setIsThreadifying(true)
+      // setAiError(null)
       const thread = await threadifyNote(noteContent)
       setThreadParts(thread || [])
     } catch (error) {
       console.error("Error threadifying note:", error)
+      // setAiError("Failed to create thread. AI service may be unavailable.")
       toast({
         title: "Error",
         description: "Failed to threadify note",
@@ -217,6 +227,16 @@ export function AIFeaturesPanel({
               <Sparkles className="mr-2 h-4 w-4" />
               {isAnalyzing ? "Analyzing..." : "Analyze with AI"}
             </Button>
+
+            {aiError && (
+              <AIErrorFallback
+                message={aiError}
+                onRetry={() => {
+                  // setAiError(null);
+                  onAnalyzeWithAI()
+                }}
+              />
+            )}
 
             {autoTitleSuggestion && (
               <div className="space-y-2 mt-4">

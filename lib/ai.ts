@@ -1,19 +1,4 @@
-import { generateText } from "ai"
-import { xai } from "@ai-sdk/xai"
-
-// Add this helper function at the top of the file
-function getXaiClient() {
-  // Check for environment variable
-  const apiKey = process.env.XAI_API_KEY
-
-  if (!apiKey) {
-    console.warn("XAI_API_KEY environment variable is not set. AI features will not work.")
-    throw new Error("XAI API key is missing. Please set the XAI_API_KEY environment variable.")
-  }
-
-  // Return configured client
-  return xai("grok-2", { apiKey })
-}
+import { callAIService } from "./ai-client"
 
 // Auto Title Generator
 export async function generateTitle(content: string) {
@@ -24,13 +9,13 @@ export async function generateTitle(content: string) {
     
     Return only the title text without any additional comments.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.3,
-    })
+    const result = await callAIService("generateTitle", prompt, { temperature: 0.3 })
 
-    return text.trim()
+    if (!result.success) {
+      throw new Error(result.error || "Failed to generate title")
+    }
+
+    return result.text.trim()
   } catch (error) {
     console.error("Error generating title:", error)
     return null
@@ -46,13 +31,13 @@ export async function generateSummary(content: string) {
     
     Return only the summary without any additional comments.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.3,
-    })
+    const result = await callAIService("generateSummary", prompt, { temperature: 0.3 })
 
-    return text.trim()
+    if (!result.success) {
+      throw new Error(result.error || "Failed to generate summary")
+    }
+
+    return result.text.trim()
   } catch (error) {
     console.error("Error generating summary:", error)
     return null
@@ -68,18 +53,18 @@ export async function suggestTags(content: string) {
     
     Return the tags as a JSON array of strings without any additional text.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.3,
-    })
+    const result = await callAIService("suggestTags", prompt, { temperature: 0.3 })
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to suggest tags")
+    }
 
     try {
       // Try to parse the response as JSON
-      return JSON.parse(text)
+      return JSON.parse(result.text)
     } catch {
       // If parsing fails, try to extract tags from text
-      const tagMatches = text.match(/#\w+/g) || []
+      const tagMatches = result.text.match(/#\w+/g) || []
       return tagMatches.map((tag) => tag.replace("#", ""))
     }
   } catch (error) {
@@ -97,13 +82,13 @@ export async function categorizeNote(content: string) {
     
     Return only the category name without any additional text.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.2,
-    })
+    const result = await callAIService("categorizeNote", prompt, { temperature: 0.2 })
 
-    return text.trim()
+    if (!result.success) {
+      throw new Error(result.error || "Failed to categorize note")
+    }
+
+    return result.text.trim()
   } catch (error) {
     console.error("Error categorizing note:", error)
     return "Misc"
@@ -117,18 +102,18 @@ export async function analyzeSentiment(content: string) {
     
     ${content}`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.2,
-    })
+    const result = await callAIService("analyzeSentiment", prompt, { temperature: 0.2 })
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to analyze sentiment")
+    }
 
     try {
-      return JSON.parse(text)
+      return JSON.parse(result.text)
     } catch {
       // Fallback if JSON parsing fails
-      const emojiMatch = text.match(/[\p{Emoji}]/u)?.[0] || "😐"
-      const moodMatch = text.match(/[a-zA-Z]+/)?.[0] || "Neutral"
+      const emojiMatch = result.text.match(/[\p{Emoji}]/u)?.[0] || "😐"
+      const moodMatch = result.text.match(/[a-zA-Z]+/)?.[0] || "Neutral"
       return { emoji: emojiMatch, mood: moodMatch }
     }
   } catch (error) {
@@ -144,14 +129,14 @@ export async function extractTasks(content: string) {
     
     ${content}`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.2,
-    })
+    const result = await callAIService("extractTasks", prompt, { temperature: 0.2 })
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to extract tasks")
+    }
 
     try {
-      return JSON.parse(text)
+      return JSON.parse(result.text)
     } catch {
       // Fallback if JSON parsing fails
       return []
@@ -171,13 +156,13 @@ export async function translateNote(content: string, targetLanguage: string) {
 
       Provide only the translated text without any additional comments.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.3,
-    })
+    const result = await callAIService("translateNote", prompt, { temperature: 0.3 })
 
-    return text
+    if (!result.success) {
+      throw new Error(result.error || "Failed to translate note")
+    }
+
+    return result.text
   } catch (error) {
     console.error("Error translating note:", error)
     return null
@@ -193,13 +178,13 @@ export async function generateInsight(content: string) {
     
     Provide a concise, thoughtful insight in 1-2 sentences.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.7,
-    })
+    const result = await callAIService("generateInsight", prompt, { temperature: 0.7 })
 
-    return text.trim()
+    if (!result.success) {
+      throw new Error(result.error || "Failed to generate insight")
+    }
+
+    return result.text.trim()
   } catch (error) {
     console.error("Error generating insight:", error)
     return null
@@ -219,13 +204,13 @@ export async function generateWeeklySummary(notes: { title: string; content: str
     
     Format your response with clear sections for themes, trends, and a brief overall summary.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.5,
-    })
+    const result = await callAIService("generateWeeklySummary", prompt, { temperature: 0.5 })
 
-    return text
+    if (!result.success) {
+      throw new Error(result.error || "Failed to generate weekly summary")
+    }
+
+    return result.text
   } catch (error) {
     console.error("Error generating weekly summary:", error)
     return null
@@ -241,14 +226,14 @@ export async function threadifyNote(content: string) {
     
     Format as a JSON array of strings, where each string is one tweet in the thread.`
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.4,
-    })
+    const result = await callAIService("threadifyNote", prompt, { temperature: 0.4 })
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to threadify note")
+    }
 
     try {
-      return JSON.parse(text)
+      return JSON.parse(result.text)
     } catch {
       // Fallback if JSON parsing fails
       return [content.substring(0, 280)]
@@ -288,22 +273,22 @@ export async function analyzeNote(content: string) {
       }
     `
 
-    const { text } = await generateText({
-      model: getXaiClient(),
-      prompt,
-      temperature: 0.3,
-    })
+    const result = await callAIService("analyzeNote", prompt, { temperature: 0.3 })
+
+    if (!result.success) {
+      throw new Error(result.error || "Failed to analyze note")
+    }
 
     try {
       // Check if the response is wrapped in a code block and extract the JSON
-      let jsonText = text
-      if (text.includes("```json")) {
-        const match = text.match(/```json\s*([\s\S]*?)\s*```/)
+      let jsonText = result.text
+      if (result.text.includes("```json")) {
+        const match = result.text.match(/```json\s*([\s\S]*?)\s*```/)
         if (match && match[1]) {
           jsonText = match[1].trim()
         }
-      } else if (text.includes("```")) {
-        const match = text.match(/```\s*([\s\S]*?)\s*```/)
+      } else if (result.text.includes("```")) {
+        const match = result.text.match(/```\s*([\s\S]*?)\s*```/)
         if (match && match[1]) {
           jsonText = match[1].trim()
         }
@@ -312,7 +297,7 @@ export async function analyzeNote(content: string) {
       return JSON.parse(jsonText)
     } catch (e) {
       console.error("Error parsing AI response:", e)
-      console.log("Raw response:", text)
+      console.log("Raw response:", result.text)
       return {
         summary: "Failed to generate summary",
         suggestedTags: [],

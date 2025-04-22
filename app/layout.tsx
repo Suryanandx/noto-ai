@@ -5,6 +5,9 @@ import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 
+// Import our environment configuration
+import { logEnvironmentStatus } from "@/lib/env"
+
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -101,6 +104,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // This will log the environment variable status during development
+  if (process.env.NODE_ENV === "development") {
+    logEnvironmentStatus()
+  }
+
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>

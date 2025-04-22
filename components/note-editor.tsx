@@ -96,6 +96,7 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
   const [recoveryDrafts, setRecoveryDrafts] = useState<DraftData[]>([])
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false)
   const [hasBeenSaved, setHasBeenSaved] = useState(!!note?.id)
+  const [aiError, setAiError] = useState<string | null>(null)
 
   const contentRef = useRef(content)
   const isMobile = useMobile()
@@ -423,6 +424,7 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
 
     try {
       setIsAnalyzing(true)
+      setAiError(null)
 
       // Use chunking for large documents
       const analysis = await chunkAndAnalyze(content, analyzeNote)
@@ -466,6 +468,8 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
           errorMessage = "Network error while connecting to AI service. Please check your connection."
         }
       }
+
+      setAiError(errorMessage)
 
       toast({
         title: "AI Analysis Error",
@@ -691,6 +695,7 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
                 onApplyTask={handleApplyTask}
                 autoTitleSuggestion={titleSuggestion}
                 onApplyTitle={handleApplyTitle}
+                aiError={aiError}
               />
             </TabsContent>
           </Tabs>
@@ -793,6 +798,7 @@ export function NoteEditor({ note, isNew = false }: NoteEditorProps) {
                 onApplyTask={handleApplyTask}
                 autoTitleSuggestion={titleSuggestion}
                 onApplyTitle={handleApplyTitle}
+                aiError={aiError}
               />
             </div>
           </div>
